@@ -10,4 +10,4 @@ A balatro mod with incredible art and totally balanced (debatable) jokers trust 
   
 best if you download on releases :3
 
-*Clover* Actually go ahead and download from the tempting green button.
+*Clover* - Actually go ahead and download from the tempting green button.
