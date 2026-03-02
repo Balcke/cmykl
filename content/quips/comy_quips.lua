@@ -3,7 +3,7 @@ G.ARGS.LOC_COLOURS.cmykl_c = HEX('14cff5')
 G.ARGS.LOC_COLOURS.cmykl_m = HEX('f714d5')
 G.ARGS.LOC_COLOURS.cmykl_y = HEX('ffda08')
 
-cmykl_util.comy_quips_win = {
+cmykl.comy_quips_win = {
   "AIN'T NO DAMN WAY!",
   "Hooray. Now that's 5 dollars for the cameo.",
   "such a shame...",
@@ -13,7 +13,7 @@ cmykl_util.comy_quips_win = {
   "my stickers..."
 }
 
-cmykl_util.comy_quips_lost = {
+cmykl.comy_quips_lost = {
   "LMAO!!!! :joy::joy::joy:",
   "well that stinks.",
   "that's enough gambling for today.",
@@ -23,7 +23,7 @@ cmykl_util.comy_quips_lost = {
   "you suck!"
 }
 
-for i = 1, #cmykl_util.comy_quips_win do
+for i = 1, #cmykl.comy_quips_win do
   SMODS.JimboQuip({
     key = "comy_quips_win_" .. i,
     type = "win",
@@ -46,7 +46,7 @@ for i = 1, #cmykl_util.comy_quips_win do
   })
 end
   
-for i = 1, #cmykl_util.comy_quips_lost do
+for i = 1, #cmykl.comy_quips_lost do
   SMODS.JimboQuip({
     key = "comy_quips_loss_" .. i,
     type = "loss",
