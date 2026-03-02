@@ -16,6 +16,17 @@ return {
             cmykl_comy_quips_loss_5 = { "ez ez ez" },
             cmykl_comy_quips_loss_6 = { "I used to pray", "for times like this..." },
             cmykl_comy_quips_loss_6 = { "you {X:red,C:white}suck!{}" },
-            }
-		}	
-	}
+            },
+            dictionary = {
+             cmykl_requires_restart = "Requires Restart",
+             cmykl_enable_ui = 'Awesome new UI',
+             cmykl_enable_ui_info = {
+                                 "Adds {C:planet}c{}o{C:legendary}m{}{C:money}y{}{X:white,C:default}k{}el and a logo to the menu!",
+             },                    
+             cmykl_enable_quips = 'New Quips!',
+             cmykl_enable_quips_info = {
+                                 "Lets {C:planet}c{}o{C:legendary}m{}{C:money}y{}{X:white,C:default}k{}el be mean at the end of the game",                    
+             },
+            },
+     }	
+}
