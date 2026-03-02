@@ -1,15 +1,21 @@
-assert(SMODS.load_file('util.lua'))()
+-- Global Table
+cmykl = {}
+
+-- Configuration related things
+cmykl.config = SMODS.current_mod.config 
+
+assert(SMODS.load_file("libs/config_tab.lua"))()
+
+if cmykl.config.cmykl_awesome_ui then
+  SMODS.load_file('libs/ui.lua')()
+end
+
+if cmykl.config.cmykl_meany_quips then
+  SMODS.load_file('content/quips/comy_quips.lua')()
+end
+
 
 assert(SMODS.load_file("./content/crossmod/yokerdisplay.lua"))()
-
-SMODS.Atlas({
-    key = "balatro", 
-    path = "balatrocmykl.png", 
-    px = 333,
-    py = 216,
-    prefix_config = { key = false },
-    atlas_table = "ASSET_ATLAS"
-})
 
 SMODS.Atlas({
     key = "modicon", 
@@ -156,4 +162,3 @@ SMODS.ObjectType({
     }
 })
 
-cmykl_util.load_items(cmykl_util.enabled_quips, 'content/quips')
