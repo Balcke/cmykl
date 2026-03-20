@@ -1,3 +1,4 @@
+
 SMODS.Joker{ --Medrano
     key = "medrano",
     config = {
@@ -51,56 +52,32 @@ SMODS.Joker{ --Medrano
     end,
 
     calculate = function(self, card, context)
+        -- these seals fucking suck and i gotta manually check for each
         if context.cardarea == G.hand and context.end_of_round and not context.blueprint then
             if context.other_card.seal == "Blue" then
+                card.ability.extra.medranorich = (card.ability.extra.medranorich) + 50
                 return {
-                    func = function()
-                    card.ability.extra.medranorich = (card.ability.extra.medranorich) + 50
-                    return true
-                end
+                    message = "!"
                 }
             end
         end
-        if context.cardarea == G.hand and context.end_of_round and not context.blueprint then
-            if context.other_card.seal == "Red" and ((SMODS.has_enhancement(context.other_card, 'm_steel')) or SMODS.has_enhancement(context.other_card, 'm_gold')) then
-                return {
-                    func = function()
-                    card.ability.extra.medranorich = (card.ability.extra.medranorich) + 25
-                    return true
-                end
-                }
-            end
-        end
-
         if context.individual and context.cardarea == G.play and not context.blueprint then
             if context.other_card.seal == "Gold" then
                 card.ability.extra.medranorich = (card.ability.extra.medranorich) + 50
-            elseif context.other_card.seal == "Red" then
-                card.ability.extra.medranorich = (card.ability.extra.medranorich) + 25
-            end
-        end
-        if context.discard  then
-            if context.other_card.seal == "Purple" then
                 return {
-                    func = function()
-                    card.ability.extra.medranorich = (card.ability.extra.medranorich) + 50
-                    return true
-                end
-                }
+                message = "!"
+            }
             end
         end
-        if context.remove_playing_cards and not context.blueprint then
-                for k, removed_card in ipairs(context.removed) do
-                    if removed_card.seal == "cmykl_spectralseal" then
-                        return {
-                                func = function()
-                                card.ability.extra.medranorich = (card.ability.extra.medranorich) + 50
-                                return true
-                            end
-                        }
-                    end
-                end
-            end
+
+        -- thankfully most of the modded seals only need this :pray:
+        if context.cmykl_seal_trigger and not context.blueprint and G.GAME.blind.in_blind then
+            card.ability.extra.medranorich = card.ability.extra.medranorich + 50
+            return {
+                message = "!"
+            }
+        end
+
         if context.cardarea == G.jokers and context.joker_main  then
                 return {
                     chips = card.ability.extra.medranorich

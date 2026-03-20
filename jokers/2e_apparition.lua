@@ -45,36 +45,32 @@ SMODS.Joker{ -- Apparition
     
     loc_vars = function(self, info_queue, card)
         
-        local new_numerator, new_denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'j_cmykl__019apparition') 
+        local new_numerator, new_denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'j_cmykl__apparition') 
         return {vars = {new_numerator, new_denominator}}
     end,
 
     calculate = function(self, card, context)
-        if context.reroll_shop  then
+        if context.reroll_shop then
             if true then
-                if SMODS.pseudorandom_probability(card, 'group_0_ac0a1114', 1, card.ability.extra.odds, 'j_cmykl__019apparition', false) then
-              SMODS.calculate_effect({
-    func = function()
-    for i = 1, 1 do
-            G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.4,
-            func = function()
-            play_sound('timpani')
-            SMODS.add_card({ set = 'Spectral', soulable = true, })                            
-            card:juice_up(0.3, 0.5)
-            return true
-        end
-        }))
-    end
-    delay(0.6)
-
-                    if created_consumable then
-                        card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral})
+                if SMODS.pseudorandom_probability(card, 'group_0_ac0a1114', 1, card.ability.extra.odds, 'j_cmykl__apparition', false) then
+                    if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    G.E_MANAGER:add_event(Event({
+                        func = (function()
+                            SMODS.add_card {
+                                set = 'Spectral',
+                                key_append = 'j_cmykl__apparition' -- Optional, useful for manipulating the random seed and checking the source of the creation in `in_pool`.
+                            }
+                            G.GAME.consumeable_buffer = 0
+                            return true
+                        end)
+                    }))
+                    return {
+                        message = localize('k_plus_spectral'),
+                        colour = G.C.SECONDARY_SET.Spectral,
+                    }
                     end
-                    return true
-                  end}, card)
-          end
+                end
             end
         end
     end

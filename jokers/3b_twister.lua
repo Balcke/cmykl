@@ -5,8 +5,8 @@ SMODS.Joker{ --Twister
         ['text'] = {
             'Triggering {C:attention}seals{} has a',
             '{C:green}#1# in #2#{} chance of',
-            'additionally triggering',
-            'other {C:attention}seals\'{} effects'
+            'giving either {C:money}$3{}, {C:tarot}Tarot{},',
+            '{C:planet}Planet{}, or a {C:spectral}Spectral{} card'
         },
         ['unlock'] = {
             [1] = 'Unlocked by default.'
@@ -28,7 +28,7 @@ SMODS.Joker{ --Twister
     unlocked = true,
     discovered = true,
     atlas = 'CustomJokers',
-    config = { extra = { max = 4, min = 0, repetitions = 1, money = 3, odds = 4} },
+    config = { extra = { max = 100, min = 1, odds = 4, dollars = 3} },
     pools = { ["cmykl_cmykl_jokers"] = true },
 
     loc_vars = function(self, info_queue, card)
@@ -37,139 +37,109 @@ SMODS.Joker{ --Twister
     end,
 
     calculate = function(self, card, context)
-    if G.__twister_active then return end
-    G.__twister_active = true
+    -- these seals fucking suck and i gotta manually check for each
+        if context.cardarea == G.hand and context.end_of_round and not context.blueprint then
+            if context.other_card.seal == "Blue" then
+                SMODS.calculate_context({cmykl_twister_trigger = true})
+                return {
+                    message = "!"
+                }
+            end
+        end
+        if context.individual and context.cardarea == G.play and not context.blueprint then
+            if context.other_card.seal == "Gold" then
+                SMODS.calculate_context({cmykl_twister_trigger = true})
+                return {
+                message = "!"
+            }
+            end
+        end
 
-    local sealer = nil
-    local randoseal = false
+        -- thankfully most of the modded seals only need this :pray:
+        if context.cmykl_seal_trigger and not context.blueprint and G.GAME.blind.in_blind then
+            SMODS.calculate_context({cmykl_twister_trigger = true})
+            return {
+                message = "!"
+            }
+        end
 
-    if context.cardarea == G.hand and context.end_of_round then
-        if context.other_card.seal == "Blue" then
-            if SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, card.ability.extra.odds, 'j_cmykl_twister') then
-                sealer = pseudorandom('Cmykl_twister', card.ability.extra.min, card.ability.extra.max)
-                randoseal = true
-            end
-        end
-    end
-    if context.cardarea == G.hand and context.end_of_round then
-        if context.other_card.seal == "Red" and ((SMODS.has_enhancement(context.other_card, 'm_steel')) or SMODS.has_enhancement(context.other_card, 'm_gold')) then
-            if SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, 8, 'j_cmykl_twister') then
-                sealer = pseudorandom('Cmykl_twister', card.ability.extra.min, card.ability.extra.max)
-                randoseal = true
-            end
-        end
-    end
-    if context.individual and context.cardarea == G.play then
-        if context.other_card.seal == "Gold" or (context.other_card.seal == "Red" and SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, 2, 'j_cmykl_twister')) then
-            if SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, card.ability.extra.odds, 'j_cmykl_twister') then
-                sealer = pseudorandom('Cmykl_twister', card.ability.extra.min, card.ability.extra.max)
-                randoseal = true
-            end
-        end
-    end
-    if context.discard then
-        if context.other_card.seal == "Purple" then
-            if SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, card.ability.extra.odds, 'j_cmykl_twister') then
-                sealer = pseudorandom('Cmykl_twister', card.ability.extra.min, card.ability.extra.max)
-                randoseal = true
-            end
-        end
-    end
-    if context.remove_playing_cards then
-        for k, removed_card in ipairs(context.removed) do
-            if removed_card.seal == "cmykl_spectralseal" then
-                if SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, card.ability.extra.odds, 'j_cmykl_twister') then
-                    sealer = pseudorandom('Cmykl_twister', card.ability.extra.min, card.ability.extra.max)
-                    randoseal = true
-                end
-            end
-        end
-    end
-
-    local result = nil
-    if sealer == 0 then
-                result = { repetitions = card.ability.extra.repetitions, message = '?!' }
-    elseif sealer == 1 then
-        result = {
-            func = function()
-                local created_consumable = false
+        if context.cmykl_twister_trigger and SMODS.pseudorandom_probability(card, 'j_cmykl_twister', 1, card.ability.extra.odds) then
+            local spinthewheel = pseudorandom('j_cmykl_twister', card.ability.extra.min, card.ability.extra.max)
+            --tarot
+            if spinthewheel <= 31 then
                 if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                    created_consumable = true
                     G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
                     G.E_MANAGER:add_event(Event({
-                        func = function()
-                            SMODS.add_card{set = 'Tarot'}
+                        func = (function()
+                            SMODS.add_card {
+                                set = 'Tarot',
+                                key_append = 'j_cmykl_twister'
+                            }
                             G.GAME.consumeable_buffer = 0
                             return true
-                        end
+                        end)
                     }))
-                end
-                if created_consumable then
-                    card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {
+                    return {
                         message = localize('k_plus_tarot'),
-                        colour = G.C.PURPLE
-                    })
+                    }
                 end
-                return true
-            end
-        }
-    elseif sealer == 2 then
-        result = {
-            func = function()
-                local created_consumable = false
-                if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                    created_consumable = true
-                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-                    G.E_MANAGER:add_event(Event({
-                        func = function()
-                            SMODS.add_card{set = 'Planet'}
-                            G.GAME.consumeable_buffer = 0
-                            return true
-                        end
-                    }))
-                end
-                if created_consumable then
-                    card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {
-                        message = localize('k_plus_planet'),
-                        colour = G.C.SECONDARY_SET.Planet
-                    })
-                end
-                return true
-            end
-        }
-    elseif sealer == 3 then
-        result = {
-            dollars = card.ability.extra.money
-        }
-    elseif sealer == 4 then
-        if SMODS.pseudorandom_probability(card, 'group_0_4d071917', 1, 4, 'j_cmykl_twister') then
-            result = {
-            func = function()
-                local created_consumable = false
-                if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                    created_consumable = true
-                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-                    G.E_MANAGER:add_event(Event({
-                        func = function()
-                            SMODS.add_card{set = 'Spectral'}
-                            G.GAME.consumeable_buffer = 0
-                            return true
-                        end
-                    }))
-                end
-                if created_consumable then
-                    card_eval_status_text(context.blueprint_card or card, 'extra', nil, nil, nil, {
-                        message = localize('k_plus_spectral'),
-                        colour = G.C.SECONDARY_SET.Spectral
-                    })
-                end
-                return true
-            end
-        }
-        end
-    end
 
-    G.__twister_active = false
-    return result
-end
+            -- planet
+            elseif spinthewheel <= 62 then
+                if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    G.E_MANAGER:add_event(Event({
+                        func = (function()
+                            SMODS.add_card {
+                                set = 'Planet',
+                                key_append = 'j_cmykl_twister'
+                            }
+                            G.GAME.consumeable_buffer = 0
+                            return true
+                        end)
+                    }))
+                    return {
+                        message = localize('k_plus_planet'),
+                    }
+                end
+
+            -- three fucking dollars
+            elseif spinthewheel <= 93 then
+                G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra.dollars
+                return {
+                    dollars = card.ability.extra.dollars,
+                    func = function()
+                        G.E_MANAGER:add_event(Event({
+                            func = function()
+                                G.GAME.dollar_buffer = 0
+                                return true
+                            end
+                        }))
+                    end
+                }
+
+            -- the spectral
+            else
+                if SMODS.pseudorandom_probability(card, 'group_0_ac0a1114', 1, card.ability.extra.odds, 'j_cmykl__apparition', false) then
+                    if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    G.E_MANAGER:add_event(Event({
+                        func = (function()
+                            SMODS.add_card {
+                                set = 'Spectral',
+                                key_append = 'j_cmykl__apparition' -- Optional, useful for manipulating the random seed and checking the source of the creation in `in_pool`.
+                            }
+                            G.GAME.consumeable_buffer = 0
+                            return true
+                        end)
+                    }))
+                    return {
+                        message = localize('k_plus_spectral'),
+                        colour = G.C.SECONDARY_SET.Spectral,
+                    }
+                    end
+                end
+            end
+        end
+    end,
 }
