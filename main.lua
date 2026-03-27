@@ -14,7 +14,7 @@ if cmykl.config.cmykl_meany_quips then
   SMODS.load_file('content/quips/comy_quips.lua')()
 end
 
-
+assert(SMODS.load_file("./libs/hooks.lua"))()
 assert(SMODS.load_file("./content/crossmod/yokerdisplay.lua"))()
 
 SMODS.Atlas({
