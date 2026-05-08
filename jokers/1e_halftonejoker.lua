@@ -46,11 +46,11 @@ SMODS.Joker{ --Halftone Joker
 
         local unique_suits = {}
 
-        for _, played_card in ipairs(context.scoring_hand) do
-            if (SMODS.get_enhancements(played_card)["m_stone"] or SMODS.get_enhancements(played_card)["m_wild"]) and not played_card.debuff then
+        for _, card in ipairs(context.scoring_hand) do
+            if (SMODS.has_no_suit(card) or SMODS.get_enhancements(card)["m_wild"]) and not card.debuff then
                 unique_suits["Suitless"] = true
-            elseif played_card.base.suit and not played_card.debuff then
-                unique_suits[played_card.base.suit] = true
+            elseif card.base.suit and not card.debuff then
+                unique_suits[card.base.suit] = true
             end 
         end
 

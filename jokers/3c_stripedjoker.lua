@@ -10,7 +10,8 @@ SMODS.Joker{ --Striped Joker
         ['text'] = {
             [1] = '{X:red,C:white}X3{} Mult if the scoring',
             [2] = 'cards\' {C:attention}rank{} is {C:attention}alternating{}',
-            [3] = '{C:inactive}(ex: 7, 5, 7, 5, 7){}'
+            [3] = '{C:inactive}(must play at least 4 cards){}',
+            [4] = '{C:inactive}(ex: 7, 5, 7, 5, 7){}'
         },
         ['unlock'] = {
             [1] = 'Unlocked by default.'
@@ -35,30 +36,25 @@ SMODS.Joker{ --Striped Joker
     pools = { ["cmykl_cmykl_jokers"] = true },
 
     calculate = function(self, card, context)
-    local hand = context.scoring_hand
-    if context.cardarea == G.play then
-        if #context.scoring_hand == 5 then
-            local card1 = hand[1]:get_id()
-            local card3 = hand[3]:get_id()
-            local card5 = hand[5]:get_id()
-            local card2 = hand[2]:get_id()
-            local card4 = hand[4]:get_id()
-
-            matcher = (card1 == card3 and card1 == card5 and card2 == card4 and card1 ~= card2)
-
-        elseif #context.scoring_hand == 4 then
-            local card1 = hand[1]:get_id()
-            local card3 = hand[3]:get_id()
-            local card2 = hand[2]:get_id()
-            local card4 = hand[4]:get_id()
-
-            matcher = (card1 == card3 and card2 == card4 and card1 ~= card2)
-        end  
-    end
-    if matcher and context.joker_main then
-            return {
-                    Xmult = 3
-                }
+        local hand = context.scoring_hand
+        if context.joker_main then
+            if #context.scoring_hand > 3 then
+                local yeah = true
+                for i in ipairs(hand) do
+                    if (i % 2 ) == 0 then
+                        if hand[i]:get_id() ~= hand[2]:get_id() then
+                            yeah = false
+                        end
+                    else
+                        if hand[i]:get_id() ~= hand[1]:get_id() then
+                            yeah = false
+                        end
+                    end
+                end
+                if yeah then
+                    return { Xmult = 3 }
+                end
+            end
         end
-end
+    end
 }

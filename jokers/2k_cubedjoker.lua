@@ -3,7 +3,7 @@ SMODS.Joker{ --Cubed Joker
     key = "cubedjoker",
     config = {
         extra = {
-            mult = 8,
+            mult = 4,
             cubed_amount = 64,
             cards = 0
         }
@@ -14,7 +14,7 @@ SMODS.Joker{ --Cubed Joker
             [1] = '{C:red}+#1#{} Mult for each',
             [2] = 'card above {C:attention}#3#{}',
             [3] = 'in your full deck',
-            [4] = '{C:inactive}[Currently{} {C:red}+#2#{}{C:inactive}]{}'
+            [4] = '{C:inactive}(Currently{} {C:red}+#2#{}{C:inactive} Mult){}'
         },
         ['unlock'] = {
             [1] = 'Unlocked by default.'

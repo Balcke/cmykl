@@ -44,7 +44,6 @@ SMODS.Joker{ -- Apparition
     end,
     
     loc_vars = function(self, info_queue, card)
-        
         local new_numerator, new_denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'j_cmykl__apparition') 
         return {vars = {new_numerator, new_denominator}}
     end,
@@ -59,7 +58,7 @@ SMODS.Joker{ -- Apparition
                         func = (function()
                             SMODS.add_card {
                                 set = 'Spectral',
-                                key_append = 'j_cmykl__apparition' -- Optional, useful for manipulating the random seed and checking the source of the creation in `in_pool`.
+                                key_append = 'j_cmykl__apparition'
                             }
                             G.GAME.consumeable_buffer = 0
                             return true
