@@ -28,7 +28,6 @@ SMODS.Joker{ --The Canyon
     cost = 8,
     rarity = 3,
     blueprint_compat = true,
-    enhancement_gate = "m_stone",
     eternal_compat = true,
     perishable_compat = true,
     unlocked = true,
