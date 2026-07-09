@@ -38,14 +38,8 @@ SMODS.Joker{ --The Canyon
     loc_vars = function(self, info_queue, card)
         local diamondtally = 0
         if G.playing_cards then
-            if next(SMODS.find_card("j_smeared")) then
-                for _, playing_card in ipairs(G.playing_cards) do
-                    if playing_card:is_suit("Diamonds") and playing_card:is_suit("Hearts") or SMODS.has_enhancement(playing_card, 'm_wild') then diamondtally = diamondtally + 1 end
-                end
-            else
-                for _, playing_card in ipairs(G.playing_cards) do
-                    if playing_card:is_suit("Diamonds") or SMODS.has_enhancement(playing_card, 'm_wild') then diamondtally = diamondtally + 1 end
-                end
+            for _, playing_card in ipairs(G.playing_cards) do
+                if playing_card:is_suit("Diamonds", nil, true) or SMODS.has_enhancement(playing_card, 'm_wild') then diamondtally = diamondtally + 1 end
             end
         end
         card.ability.extra.diamondsindeck = math.floor(diamondtally * 1.5)
@@ -53,6 +47,13 @@ SMODS.Joker{ --The Canyon
     end,
 
     calc_dollar_bonus = function(self, card)
-        return G.GAME.blind.boss and (card.ability.extra.diamondsindeck) or nil
+        local diamondtally = 0
+        if G.playing_cards then
+            for _, playing_card in ipairs(G.playing_cards) do
+                if playing_card:is_suit("Diamonds", nil, true) or SMODS.has_enhancement(playing_card, 'm_wild') then diamondtally = diamondtally + 1 end
+            end
+        end
+        card.ability.extra.diamondsindeck = math.floor(diamondtally * 1.5)
+        return G.GAME.blind.boss and diamondtally > 0 and (card.ability.extra.diamondsindeck) or nil
     end,
 }

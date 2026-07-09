@@ -38,14 +38,8 @@ SMODS.Joker{ --The Valley
     loc_vars = function(self, info_queue, card)
         local clubtally = 0
         if G.playing_cards then
-            if next(SMODS.find_card("j_smeared")) then
-                for _, playing_card in ipairs(G.playing_cards) do
-                    if playing_card:is_suit("Clubs") and playing_card:is_suit("Spades") or SMODS.has_enhancement(playing_card, 'm_wild') then clubtally = clubtally + 1 end
-                end
-            else
-                for _, playing_card in ipairs(G.playing_cards) do
-                    if playing_card:is_suit("Clubs") or SMODS.has_enhancement(playing_card, 'm_wild') then clubtally = clubtally + 1 end
-                end
+            for _, playing_card in ipairs(G.playing_cards) do
+                if playing_card:is_suit('Clubs', nil, true) or SMODS.has_enhancement(playing_card, 'm_wild') then clubtally = clubtally + 1 end
             end
         end
         card.ability.extra.clubsindeck = clubtally * 3
@@ -53,10 +47,17 @@ SMODS.Joker{ --The Valley
     end,
 
     calculate = function(self, card, context)
+        local clubtally = 0
+        if G.playing_cards then
+            for _, playing_card in ipairs(G.playing_cards) do
+                if playing_card:is_suit('Clubs', nil, true) or SMODS.has_enhancement(playing_card, 'm_wild') then clubtally = clubtally + 1 end
+            end
+        end
+        card.ability.extra.clubsindeck = clubtally * 3
         if context.cardarea == G.jokers and context.joker_main  then
                 return {
-                    mult = card.ability.extra.clubsindeck
+                    Xmult = card.ability.extra.clubsindeck
                 }
         end
-    end
+    end,
 }
